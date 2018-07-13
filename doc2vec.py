@@ -7,6 +7,7 @@ from collections import OrderedDict
 
 current_dir = path.dirname(__file__)
 text = open(path.join(current_dir, 'titles.txt'), 'r').read()
+#text = open(path.join(current_dir, 'documents.txt'), 'r').read()
 documents = text.split("|")
 
 #print(documents)
@@ -23,6 +24,7 @@ def words(text):
     while node:
         word_type = node.feature.split(",")[0]
         if word_type in ["名詞"]:
+#            print(node.surface)
             out_word.append(node.surface)
         node = node.next
     return out_word
@@ -32,9 +34,10 @@ training_docs = []
 for i, document in enumerate(documents):
     training_docs.append(TaggedDocument(words=words(document), tags=['doc' +str(i + 1)]))
 
+#print(training_docs)
 # min_count=1:最低1回出現した単語を学習に使用
 # dm=0: 学習モデル=DBOW
-model = Doc2Vec(documents=training_docs, min_count=1, dm=0)
+model = Doc2Vec(documents=training_docs, dm=1, size=300, window=8, min_count=10, workers=4)
 
 tags = OrderedDict() #辞書の繰り返し時による順番を待つ
 tag_list = (('doc1', "記事A"), ('doc2', "記事B"), ('doc3', "記事C"), ('doc4', "記事D"), ('doc5', "記事E"), ('doc6', "記事F"))
